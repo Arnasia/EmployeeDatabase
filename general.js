@@ -16,8 +16,8 @@ const beginPrompt = () => {
         } else if (answer.initialPrompt === 'Add departments') {
           return addDepartment();
   
-        } else if (answer.initialPrompt === 'View all departments') {
-          return viewAllEmployees();
+        } else if (answer.initialPrompt === 'View all Employees') {
+          return viewEmployees();
   
         } else if (answer.initialPrompt === 'Add an Employee') {
           return addEmployee();
@@ -51,7 +51,7 @@ const beginPrompt = () => {
         console.log("\n");
         console.table(departments);
       })
-      .then(() => startNewPrompt());
+      .then(() => beginPrompt());
   }
 
   function addDepartment() {
@@ -61,10 +61,59 @@ const beginPrompt = () => {
         message: "What is the name of the department?"
       },
     ]).then(res => {
-      // CREATE a department
+      // cretes a department in the database
       db.addDepartment(res.name)
       console.log("The department has been added!")
       beginPrompt()
     })
   }
 
+  function viewEmployees() {
+    //gets employees from database and list them
+    db.getEmployees()
+      .then(([rows]) => {
+        let employees = rows;
+        console.log("\n");
+        console.table(employees);
+      })
+      .then(() => beginPrompt());
+  }
+
+  function addEmployee() {
+    Promise.all([db.getRoles(), db.getManager()])
+      .then(([[roles], [managers]]) => {
+        // console.log(roles[0]);
+        // console.log(managers[0]);
+        return inquirer.prompt([
+          {
+            name: 'firstname',
+            message: "What is the employee's first name?"
+          },
+          {
+            name: 'lastname',
+            message: "What is the employee's last name?"
+          },
+          {
+            type: 'list',
+            name: 'rolePrompt',
+            message: "What is the employee's role?",
+            choices: roles.map(role => ({ name: role.title, value: role.id })),
+          },
+          {
+            type: 'list',
+            name: 'managerPrompt',
+            message: "What is the employee's manager?",
+            choices: managers.map(manager => ({ name: `${manager.first_name} ${manager.last_name}`, value: manager.id })),
+          }
+        ])
+      }
+      ).then(({ firstname, lastname, rolePrompt, managerPrompt }) => {
+        // adds an employee and the user inputs
+        db.addEmployee(firstname, lastname, rolePrompt, managerPrompt)
+        console.log("The employee has been added!")
+        beginPrompt()
+      })
+  }
+  
+
+  beginPrompt();
