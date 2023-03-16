@@ -44,5 +44,27 @@ const beginPrompt = () => {
       })
   };
 
+  function viewDepartments() {
+    db.getDepartments()
+      .then(([rows]) => {
+        let departments = rows;
+        console.log("\n");
+        console.table(departments);
+      })
+      .then(() => startNewPrompt());
+  }
 
+  function addDepartment() {
+    inquirer.prompt([
+      {
+        name: 'name',
+        message: "What is the name of the department?"
+      },
+    ]).then(res => {
+      // CREATE a department
+      db.addDepartment(res.name)
+      console.log("The department has been added!")
+      beginPrompt()
+    })
+  }
 
