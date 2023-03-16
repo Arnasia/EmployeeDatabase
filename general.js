@@ -167,4 +167,59 @@ const beginPrompt = () => {
       })
   }
 
+  function viewRoles() {
+    db.getRoles()
+      .then(([rows]) => {
+        let roles = rows;
+        console.log("\n");
+        console.table(roles);
+      })
+      .then(() => beginPrompt());
+  }
+
+  function addRole() {
+    db.getDepartments()
+      .then(([departments]) => {
+        return inquirer.prompt([
+          {
+            name: 'title',
+            message: "What is the name of the role?"
+          },
+          {
+            name: 'salary',
+            message: "What is the salary amount?"
+          },
+          {
+            type: 'list',
+            name: 'departmentPrompt',
+            message: "What is the role's department?",
+            choices: departments.map(department => ({ name: department.name, value: department.id })),
+          },
+        ])
+      },
+      ).then(({ title, salary, departmentPrompt }) => {
+        db.addRole(title, salary, departmentPrompt)
+        console.log("The role has been added!")
+        beginPrompt()
+      })
+  }
+  function deleteRole() {
+    db.getRoles()
+      .then(([roles]) => {
+        return inquirer.prompt([
+          {
+            type: 'list',
+            name: 'rolePrompt',
+            message: "Which role would you like to delete?",
+            choices: roles.map(role => ({ name: role.title, value: role.id })),
+          },
+        ])
+      },
+      ).then(({ rolePrompt }) => {
+        db.deleteRole(rolePrompt)
+        console.log("The role has been deleted!")
+        beginPrompt()
+      })
+  }
+
   beginPrompt();
