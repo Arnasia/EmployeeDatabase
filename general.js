@@ -148,4 +148,23 @@ const beginPrompt = () => {
       });
   };
 
+  function deleteEmployee() {
+    db.getEmployees()
+      .then(([employees]) => {
+        return inquirer.prompt([
+          {
+            type: 'list',
+            name: 'employeePrompt',
+            message: "Which employee would you like to delete?",
+            choices: employees.map(employee => ({ name: `${employee.first_name} ${employee.last_name}`, value: employee.id })),
+          },
+        ])
+      },
+      ).then(({ employeePrompt }) => {
+        db.deleteEmployee(employeePrompt)
+        console.log("The employee has been deleted!")
+        beginPrompt()
+      })
+  }
+
   beginPrompt();
