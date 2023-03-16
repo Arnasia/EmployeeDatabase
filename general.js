@@ -13,7 +13,7 @@ const beginPrompt = () => {
         if (answer.initialPrompt === 'View all departments') {
           return viewDepartments();
   
-        } else if (answer.initialPrompt === 'Add departments') {
+        } else if (answer.initialPrompt === 'Add department') {
           return addDepartment();
   
         } else if (answer.initialPrompt === 'View all Employees') {
@@ -115,5 +115,37 @@ const beginPrompt = () => {
       })
   }
   
+  function updateEmployeeRole() {
+    db.getEmployees()
+      .then(([employees]) => {
+        inquirer.prompt([
+          {
+            type: 'list',
+            name: 'employeePrompt',
+            message: "Which employee role would you like to update?",
+            //map each with name as display, value as return value. Map with employee object array
+            choices: employees.map(employee => ({ name: `${employee.first_name} ${employee.last_name}`, value: employee.id })),
+          }
+        ])
+          .then(res => {
+            let employee_id = res.employeePrompt;
+            db.getRoles()
+              .then(([roles]) => {
+                inquirer.prompt([
+                  {
+                    type: 'list',
+                    name: 'rolePrompt',
+                    message: "What role do you want to update the employee to?",
+                    choices: roles.map(role => ({ name: role.title, value: role.id })),
+                  }
+                ])
+                  .then(res => db.updateRole(employee_id, res.rolePrompt))
+                  .then(() => console.log("The employee's role has been updated!"))
+                  .then(() => beginPrompt())
+  
+              });
+          });
+      });
+  };
 
   beginPrompt();
