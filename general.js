@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
-const { default: Choices } = require("inquirer/lib/objects/choices");
 const db = require("./db/connectdb");
+const consTable = ('console.table');
 
 const beginPrompt = () => {
     inquirer.prompt([{
