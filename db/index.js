@@ -54,5 +54,21 @@ class EmployeeDatabase {
       `DELETE FROM employee WHERE id = ?`
       , id)
   };
+  
+  getRoles() {
+    return this.connection.promise().query(
+      `SELECT role.id, role.title, department.name AS department, role.salary
+        FROM role
+        LEFT JOIN department 
+        ON role.department_id = department.id`
+    );
+  };
 
-  }
+  deleteRole(id) {
+    return this.connection.promise().query(
+      `DELETE FROM role WHERE id = ?`
+      , id)
+  };
+};
+
+module.exports = new EmployeeDatabase(connection)
