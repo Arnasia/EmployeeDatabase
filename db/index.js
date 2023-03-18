@@ -33,13 +33,26 @@ class EmployeeDatabase {
           ON manager.id = employee.manager_id;`
       );
     };
-    
+
   addEmployee(first_name, last_name, role_id, manager_id) {
     return this.connection.promise().query(
       `INSERT INTO employee(first_name, last_name, role_id, manager_id) 
         VALUES(?,?,?,?)`
       // employee to replace
       , [first_name, last_name, role_id, manager_id])
+  };
+
+  updateRole(employee_id, role_id) {
+    return this.connection.promise().query(
+      `UPDATE employee SET role_id = ? WHERE id = ?`,
+      //replace role
+      [role_id, employee_id])
+  };
+
+  deleteEmployee(id) {
+    return this.connection.promise().query(
+      `DELETE FROM employee WHERE id = ?`
+      , id)
   };
 
   }
