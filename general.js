@@ -1,6 +1,5 @@
 const inquirer = require("inquirer");
-const db = require("./db/connectdb");
-const consTable = ('console.table');
+const EmployeeDatabase = require ("./db/index")
 
 const beginPrompt = () => {
     inquirer.prompt([{
@@ -10,31 +9,31 @@ const beginPrompt = () => {
         choices: ['View All Departments', 'Add Department','View All Employees', 'Add Employee', 'Update Employee Role', 'Delete Employee', 'View All Roles', 'Add Role', 'Delete Role'],
     }])
     .then(answer => {
-        if (answer.initialPrompt === 'View all departments') {
+        if (answer.initialPrompt === 'View All Departments') {
           return viewDepartments();
   
-        } else if (answer.initialPrompt === 'Add department') {
+        } else if (answer.initialPrompt === 'Add Department') {
           return addDepartment();
   
-        } else if (answer.initialPrompt === 'View all Employees') {
+        } else if (answer.initialPrompt === 'View All Employees') {
           return viewEmployees();
   
-        } else if (answer.initialPrompt === 'Add an Employee') {
+        } else if (answer.initialPrompt === 'Add Employee') {
           return addEmployee();
   
-        } else if (answer.initialPrompt === 'Update an employee role') {
+        } else if (answer.initialPrompt === 'Update Employee Role') {
           return updateEmployeeRole();
   
-        } else if (answer.initialPrompt === 'Delete employee') {
+        } else if (answer.initialPrompt === 'Delete Employee') {
           return deleteEmployee();
   
-        } else if (answer.initialPrompt === 'View all roles') {
+        } else if (answer.initialPrompt === 'View All Roles') {
           return viewRoles();
   
-        } else if (answer.initialPrompt === 'Add a role') {
+        } else if (answer.initialPrompt === 'Add Role') {
           return addRole();
   
-        } else if (answer.initialPrompt === 'Delete a role') {
+        } else if (answer.initialPrompt === 'Delete Role') {
           return deleteRole();
 
         } else {
@@ -45,7 +44,7 @@ const beginPrompt = () => {
   };
 
   function viewDepartments() {
-    db.getDepartments()
+    EmployeeDatabase.getDepartments()
       .then(([rows]) => {
         let departments = rows;
         console.log("\n");
@@ -62,7 +61,7 @@ const beginPrompt = () => {
       },
     ]).then(res => {
       // cretes a department in the database
-      db.addDepartment(res.name)
+      EmployeeDatabase.addDepartment(res.name)
       console.log("The department has been added!")
       beginPrompt()
     })
@@ -70,7 +69,7 @@ const beginPrompt = () => {
 
   function viewEmployees() {
     //gets employees from database and list them
-    db.getEmployees()
+    EmployeeDatabase.getEmployees()
       .then(([rows]) => {
         let employees = rows;
         console.log("\n");
@@ -80,7 +79,7 @@ const beginPrompt = () => {
   }
 
   function addEmployee() {
-    Promise.all([db.getRoles(), db.getManager()])
+    Promise.all([EmployeeDatabase.getRoles(), EmployeeDatabase.getManager()])
       .then(([[roles], [managers]]) => {
         // console.log(roles[0]);
         // console.log(managers[0]);
@@ -109,14 +108,14 @@ const beginPrompt = () => {
       }
       ).then(({ firstname, lastname, rolePrompt, managerPrompt }) => {
         // adds an employee and the user inputs
-        db.addEmployee(firstname, lastname, rolePrompt, managerPrompt)
+        EmployeeDatabase.addEmployee(firstname, lastname, rolePrompt, managerPrompt)
         console.log("The employee has been added!")
         beginPrompt()
       })
   }
   
   function updateEmployeeRole() {
-    db.getEmployees()
+    EmployeeDatabase.getEmployees()
       .then(([employees]) => {
         inquirer.prompt([
           {
@@ -129,7 +128,7 @@ const beginPrompt = () => {
         ])
           .then(res => {
             let employee_id = res.employeePrompt;
-            db.getRoles()
+            EmployeeDatabase.getRoles()
               .then(([roles]) => {
                 inquirer.prompt([
                   {
@@ -139,7 +138,7 @@ const beginPrompt = () => {
                     choices: roles.map(role => ({ name: role.title, value: role.id })),
                   }
                 ])
-                  .then(res => db.updateRole(employee_id, res.rolePrompt))
+                  .then(res => EmployeeDatabase.updateRole(employee_id, res.rolePrompt))
                   .then(() => console.log("The employee's role has been updated!"))
                   .then(() => beginPrompt())
   
@@ -149,7 +148,7 @@ const beginPrompt = () => {
   };
 
   function deleteEmployee() {
-    db.getEmployees()
+    EmployeeDatabase.getEmployees()
       .then(([employees]) => {
         return inquirer.prompt([
           {
@@ -161,14 +160,14 @@ const beginPrompt = () => {
         ])
       },
       ).then(({ employeePrompt }) => {
-        db.deleteEmployee(employeePrompt)
+        EmployeeDatabase.deleteEmployee(employeePrompt)
         console.log("The employee has been deleted!")
         beginPrompt()
       })
   }
 
   function viewRoles() {
-    db.getRoles()
+    EmployeeDatabase.getRoles()
       .then(([rows]) => {
         let roles = rows;
         console.log("\n");
@@ -178,7 +177,7 @@ const beginPrompt = () => {
   }
 
   function addRole() {
-    db.getDepartments()
+    EmployeeDatabase.getDepartments()
       .then(([departments]) => {
         return inquirer.prompt([
           {
@@ -198,13 +197,13 @@ const beginPrompt = () => {
         ])
       },
       ).then(({ title, salary, departmentPrompt }) => {
-        db.addRole(title, salary, departmentPrompt)
+        EmployeeDatabase.addRole(title, salary, departmentPrompt)
         console.log("The role has been added!")
         beginPrompt()
       })
   }
   function deleteRole() {
-    db.getRoles()
+    EmployeeDatabase.getRoles()
       .then(([roles]) => {
         return inquirer.prompt([
           {
@@ -216,7 +215,7 @@ const beginPrompt = () => {
         ])
       },
       ).then(({ rolePrompt }) => {
-        db.deleteRole(rolePrompt)
+        EmployeeDatabase.deleteRole(rolePrompt)
         console.log("The role has been deleted!")
         beginPrompt()
       })

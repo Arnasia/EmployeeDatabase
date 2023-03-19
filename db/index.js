@@ -21,6 +21,7 @@ class EmployeeDatabase {
         , name)
     };
 
+
     getEmployees() {
       return this.connection.promise().query(
         `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager 
@@ -41,6 +42,14 @@ class EmployeeDatabase {
       // employee to replace
       , [first_name, last_name, role_id, manager_id])
   };
+
+  addRole(title, salary, department_id){
+    return this.connection.promise().query(
+      `INSERT INTO role (title, salary, department_id) 
+        VALUES(?,?,?)`
+      // replace role
+      , [title, salary, department_id])
+  }
 
   updateRole(employee_id, role_id) {
     return this.connection.promise().query(

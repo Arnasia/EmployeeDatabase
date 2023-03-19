@@ -5,7 +5,7 @@ use employee_db;
 
 
 DROP TABLE IF EXISTS department;
-DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS role;
 DROP TABLE IF EXISTS employee;
 
 CREATE TABLE department (
@@ -13,7 +13,7 @@ CREATE TABLE department (
   name VARCHAR(30) NOT NULL
   );
 
-CREATE TABLE roles (
+CREATE TABLE role (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(30) NOT NULL,
   salary DECIMAL NOT NULL,
@@ -28,6 +28,5 @@ CREATE TABLE employee (
   role_id INTEGER NOT NULL,
   manager_id INTEGER,
   INDEX rol_ind (role_id),
-  INDEX man_ind (manager_id),
-  PRIMARY KEY (id),
+  INDEX man_ind (manager_id)
 );
