@@ -43,18 +43,25 @@ class EmployeeDatabase {
       , [first_name, last_name, role_id, manager_id])
   };
 
+  //necessary for add employee
+  getManager() {
+    return this.connection.promise().query(
+      "SELECT * FROM employee"
+    );
+  };
+
   addRole(title, salary, department_id){
     return this.connection.promise().query(
       `INSERT INTO role (title, salary, department_id) 
         VALUES(?,?,?)`
-      // replace role
+      // replace role salary and in the selected department
       , [title, salary, department_id])
   }
 
   updateRole(employee_id, role_id) {
     return this.connection.promise().query(
       `UPDATE employee SET role_id = ? WHERE id = ?`,
-      //replace role
+      //update role of selected employee
       [role_id, employee_id])
   };
 
